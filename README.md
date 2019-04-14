@@ -1,6 +1,8 @@
 # JAM_SafeCracker
 A safe cracker script.
 You can use this for whatever you like.
+No support. Don't post an issue.
+
 ![alt text](https://i.imgur.com/uVcpgbf.jpg)
 
 # Requirements
