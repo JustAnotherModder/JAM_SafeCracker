@@ -12,10 +12,22 @@ function JSC:Awake()
 		TriggerEvent('esx:getSharedObject', 		  	function(...) self:GetESX(...); 	end)
 		TriggerEvent('JAM_Utilities:GetSharedObject', 	function(...) self:GetJUtils(...); 	end)
 		Citizen.Wait(0)
-	end	
-end
+	end
 
-function JSC:Start()
+	TriggerServerEvent('JSC:Startup')
+end
+	-- ignore this. of no relevance to anything.
+
+	-- local playerpos = GetEntityCoords(PlayerPedId())
+	-- local hashKey =GetHashKey("bkr_prop_biker_safebody_01a")
+	-- local newObj = CreateObject(hashKey, playerpos.x, playerpos.y, playerpos.z, true, false, true)
+	-- print(GetOffsetFromEntityGivenWorldCoords(newObj, playerpos.x, playerpos.y, playerpos.z))
+	-- SetEntityHeading(newObj, 270.0)
+	-- print(GetOffsetFromEntityGivenWorldCoords(newObj, playerpos.x, playerpos.y, playerpos.z))
+	-- --print(GetModelDimensions(hashKey))
+
+
+function JSC:StartMinigame(rewards)
 	if not self or not self.Config or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
 	local txd = CreateRuntimeTxd(self.Config.TextureDict)
 	for i = 1, 2 do CreateRuntimeTextureFromImage(txd, tostring(i), "LockPart" .. i .. ".PNG") end
@@ -23,17 +35,21 @@ function JSC:Start()
 	self.MinigameOpen = true
 	self.SoundID 	  = GetSoundId() 
 	self.Timer 		  = GetGameTimer()
+	self.JUtils.SetUI(false)
 
 	if not IsRadarHidden() then self.JUtils.SetUI(false); end
 	if not RequestAmbientAudioBank(self.Config.AudioBank, false) then self.JUtils.LoadAudioBank(self.Config.AudioBankName); end
 	if not HasStreamedTextureDictLoaded(self.Config.TextureDict) then self.JUtils.LoadTextureDict(self.Config.TextureDict); end
 
-	Citizen.CreateThread(function(...) self:Update(...); end)	
+	Citizen.CreateThread(function() self:Update(rewards); end)	
 end
 
-function JSC:Update()
-	if not self or not self.Config or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end 
-	Citizen.CreateThread(function(...) self:HandleMinigame(...); end)
+RegisterNetEvent('JAM_SafeCracker:StartMinigame')
+AddEventHandler('JAM_SafeCracker:StartMinigame', function(rewards) JSC:StartMinigame(rewards); end)
+
+function JSC:Update(rewards)
+	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end	
+	Citizen.CreateThread(function() self:HandleMinigame(rewards); end)
 	while self.MinigameOpen do
 		self:InputCheck()   
 		Citizen.Wait(0)
@@ -42,12 +58,11 @@ end
 
 function JSC:InputCheck()
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end	
-
 	local leftKeyPressed 	= IsControlPressed( 0, self.JUtils.Keys[ 'LEFT' ] ) 	or 0
 	local rightKeyPressed 	= IsControlPressed( 0, self.JUtils.Keys[ 'RIGHT' ] )	or 0
 	if 		IsControlPressed( 0, self.JUtils.Keys[ 'G' ] ) 			then self:EndMinigame(false); end
 	if 		IsControlPressed( 0, self.JUtils.Keys[ 'Z' ] ) 			then rotSpeed 	=   0.1; modifier = 33;
-    elseif 	IsControlPressed( 0, self.JUtils.Keys[ 'LEFTSHIFT' ] ) 	then rotSpeed 	=   1.0; modifier = 50; 
+    elseif 	IsControlPressed( 0, self.JUtils.Keys[ 'LEFTSHIFT' ] )	then rotSpeed 	=   1.0; modifier = 50; 
     else 																 rotSpeed	=   0.4; modifier = 90; end
 
     local lockRotation = math.max(modifier / rotSpeed, 0.1)
@@ -62,7 +77,7 @@ function JSC:InputCheck()
     end
 end
 
-function JSC:HandleMinigame() 
+function JSC:HandleMinigame(rewards) 
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
 
 	local lockRot 		 = math.random(385.00, 705.00)	
@@ -84,6 +99,13 @@ function JSC:HandleMinigame()
 	-- Multiples of 3 are negative, 719 - 405;
 	-- Everything else is negative, 45 - 359;
 
+	---------------------------------------------
+	-- Still havn't done, you're welcome to ^^ --
+	---------------------------------------------
+
+	--------------------------------------
+	-- Comment this out for a challenge --
+	--------------------------------------
 
 	print("Here ya go, bloody cheater.")
 	for i = 1,4 do
@@ -92,6 +114,7 @@ function JSC:HandleMinigame()
 
     local correctCount	= 1
     local hasRandomized	= false
+
     self.LockRotation = 0.0 + lockRot
 								
 	while self.MinigameOpen do	
@@ -103,9 +126,9 @@ function JSC:HandleMinigame()
 
 		local lockVal = math.floor(self.LockRotation)
 
-		if 		correctCount > 1 and 	correctCount < 5 and lockVal + (self.Config.LockTolerance * 3.60) < lockNumbers[correctCount - 1] and lockNumbers[correctCount - 1] < lockNumbers[correctCount] then self:EndMinigame(false)
-		elseif 	correctCount > 1 and 	correctCount < 5 and lockVal - (self.Config.LockTolerance * 3.60) > lockNumbers[correctCount - 1] and lockNumbers[correctCount - 1] > lockNumbers[correctCount] then self:EndMinigame(false)
-		elseif 	correctCount > 4 then 	self:EndMinigame(true)
+		if 		correctCount > 1 and 	correctCount < 5 and lockVal + (self.Config.LockTolerance * 3.60) < lockNumbers[correctCount - 1] and lockNumbers[correctCount - 1] < lockNumbers[correctCount] then self:EndMinigame(false, rewards); self.MinigameOpen = false; 
+		elseif 	correctCount > 1 and 	correctCount < 5 and lockVal - (self.Config.LockTolerance * 3.60) > lockNumbers[correctCount - 1] and lockNumbers[correctCount - 1] > lockNumbers[correctCount] then self:EndMinigame(false, rewards); self.MinigameOpen = false; 
+		elseif 	correctCount > 4 then 	self:EndMinigame(true, rewards)
 		end
 
 		for k,v in pairs(lockNumbers) do
@@ -129,38 +152,66 @@ function JSC:HandleMinigame()
 	end
 end
 
-function JSC:EndMinigame(won)	
+function JSC:EndMinigame(won, rewards)
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
 
 	self.MinigameOpen = false	
-	if IsRadarHidden() then self.JUtils.SetUI(true); end
+	-- if IsRadarHidden() then self.JUtils.SetUI(true); end
 
 	local msg = ""
 	if won then 
 		PlaySoundFrontend(self.SoundID, 	self.Config.SafeFinalSound, self.Config.SafeSoundset, true)
-		msg = "~g~You cracked the lock."; Citizen.Wait(1000)
+		msg = "~g~You cracked the lock."
+
+		Citizen.Wait(100)
+
 		PlaySoundFrontend(self.SoundID,  self.Config.SafeOpenSound, 	self.Config.SafeSoundset, true)
-		TriggerServerEvent('JSC:AddReward')
+		TriggerServerEvent('JSC:AddReward', rewards)
+		
+		while self.DoorHeading + 150 > GetEntityHeading(self.DoorObj) do		
+			SetEntityHeading(self.DoorObj, GetEntityHeading(self.DoorObj) + 0.3)
+			Citizen.Wait(0)
+		end
 	else		
 		PlaySoundFrontend(self.SoundID, 	self.Config.SafeResetSound, self.Config.SafeSoundset, true)
 		msg = "~r~You didn't crack the lock."
+
 	end
 
 	TriggerEvent('esx:showNotification', msg)
 end
 
-function JSC:SpawnObjectTable(table, position, heading)
-	if not table or not position or not heading or type(table) ~= 'table' or type(position) ~= 'vector3' or type(heading) ~= 'number' then return; end
+RegisterNetEvent('JAM_SafeCracker:EndMinigame')
+AddEventHandler('JAM_SafeCracker:EndMinigame', function(won, rewards) JSC:EndMinigame(won, rewards); end)
 
-	self.JUtils.LoadModelsInTable(self.SafeModels)
+function JSC:SpawnSafeObject(table, position, heading)
+	if not self or not JUtils then return; end
+	if not table or not position or not heading then return; end
+	if type(table) ~= 'table' or type(position) ~= 'vector3' or type(heading) ~= 'number' then return; end
 
+	JUtils.LoadModelsInTable(self.SafeModels)
+
+	local retTable = {}
+	local i = 0
 	for k,v in pairs(table) do
-		local hash = self.JUtils.GetHashKey(v.ModelName)
+		i = i + 1
+		local hash = JUtils.GetHashKey(v.ModelName)
+		local newHeading = heading + v.Heading
+
 		local newObj = CreateObject(hash, v.Pos.x + position.x, v.Pos.y + position.y, v.Pos.z + position.z, true, false, true)
+
+		if v.ModelName == JSC.SafeModels.Door then 
+			JSC.DoorObj = newObj
+			JSC.DoorHeading = GetEntityHeading(self.DoorObj)
+		end
+
 		FreezeEntityPosition(newObj, true)
-		if v.Rot.x ~= 0.0 or v.Rot.y ~= 0.0 or v.Rot.x ~= 0.0 then SetEntityRotation(newObj, v.Rot.x, v.Rot.y, v.Rot.z, 1, true); end
-		if v.Heading ~= 0.0 then SetEntityHeading(newObj, heading + v.Heading); end
+		SetEntityHeading(newObj, newHeading)
+
+		if v.Rot.x ~= 0.0 or v.Rot.y ~= 0.0 or v.Rot.z ~= 0.0 then SetEntityRotation(newObj, v.Rot.x, v.Rot.y, v.Rot.z, 1, true); end
+		retTable[v.ModelName] = newObj		
 	end
+	return retTable
 end
 
 Citizen.CreateThread(function(...) JSC:Awake(...); end)

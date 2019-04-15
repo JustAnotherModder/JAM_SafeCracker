@@ -1,13 +1,35 @@
 JSC = JAM_SafeCracker
+	
+function JSC:GetESX(obj) self.ESX = obj; ESX = obj; end
+function JSC:GetJUtils(obj) self.JUtils = obj; JUtils = obj; end
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj; end)	
+function JSC:GetSharedObjects()
+	while not ESX or not self.ESX or not JUtils or not self.JUtils do
+		TriggerEvent('esx:getSharedObject', function(...) self:GetESX(...); end)
+		TriggerEvent('JAM_Utilities:GetSharedObject', function(...) self:GetJUtils(...); end)
+		Citizen.Wait(0)
+	end
+end
 
-function JSC:AddReward(...)
+RegisterNetEvent('JSC:Startup')
+AddEventHandler('JSC:Startup', function() JSC:GetSharedObjects(); end)
+
+function JSC:AddReward(rewards)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	if not xPlayer then return; end
 
-	xPlayer.addMoney(self.Config.CashReward)	
+	if rewards.CashAmount then cashReward = xPlayer.addMoney(rewards.CashAmount); end
+
+	for k,v in pairs(rewards.Items) do
+		local randomCount = math.random(1, rewards.DrugsAmount)
+		xPlayer.addInventoryItem(v, randomCount)
+	end
+
+	for i = 1, rewards.WeaponAmount do
+		local randomWeapon = rewards.Weapons[math.random(1, #rewards.Weapons)]
+		xPlayer.addWeapon(randomWeapon, math.random(50, 250))
+	end
 end
 
 RegisterNetEvent('JSC:AddReward')
-AddEventHandler('JSC:AddReward', function(...) JSC:AddReward(...); end)
+AddEventHandler('JSC:AddReward', function(rewards) JSC:AddReward(rewards); end)
