@@ -7,7 +7,7 @@
 - Soon to be part of a much larger drugs/criminal framework. Follow to keep updated.
 - https://github.com/JustAnotherModder/JAM_Drugs
 
-![alt text](https://imgur.com/2FvhMqS)
+![alt text](https://i.imgur.com/2FvhMqS.jpg)
 
 # Requirements
 - https://github.com/ESX-Org/es_extended
