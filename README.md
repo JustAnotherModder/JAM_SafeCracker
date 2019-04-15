@@ -6,8 +6,8 @@
 ![alt text](https://i.imgur.com/uVcpgbf.jpg)
 
 # Requirements
-https://github.com/ESX-Org/es_extended
-https://github.com/JustAnotherModder/JAM_Utilities
+- https://github.com/ESX-Org/es_extended
+- https://github.com/JustAnotherModder/JAM_Utilities
 
 # Notes
 Any and all improvements to this must be sent back to the author (me).
