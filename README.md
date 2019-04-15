@@ -2,6 +2,7 @@
 - A safe cracker script.
 - You can use this for whatever you like.
 - No support. Don't post an issue.
+- Use JSC:Start() to open the minigame.
 
 ![alt text](https://i.imgur.com/uVcpgbf.jpg)
 
