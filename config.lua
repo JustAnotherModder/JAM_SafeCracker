@@ -33,7 +33,7 @@ JSC.SafeObjects = {
 
 	methAObj = { ModelName = JSC.SafeModels.MethA, Pos 	= vector3( -0.45,  0.45,   0.26 ), Heading = 0.0,   Rot = vector3(0.0,   0.0,   0.0), 		Frozen = false },
 	methBObj = { ModelName = JSC.SafeModels.MethB, Pos 	= vector3( -0.25,  0.25,   0.26 ), Heading = 45.0,  Rot = vector3(0.0,   0.0,   0.0), 		Frozen = false },
-	methCObj = { ModelName = JSC.SafeModels.MethB, Pos 	= vector3( -0.55,  0.45,   0.75 ), Heading = 25.0,  Rot = vector3(0.0,   0.0,   0.0), 		Frozen = false },
+	methCObj = { ModelName = JSC.SafeModels.MethB, Pos 	= vector3( -0.55,  0.50,   0.75 ), Heading = 25.0,  Rot = vector3(0.0,   0.0,   0.0), 		Frozen = false },
 	methDObj = { ModelName = JSC.SafeModels.MethC, Pos 	= vector3( -0.55,  0.25,   0.75 ), Heading = 0.0,   Rot = vector3(0.0,   0.0,   0.0), 		Frozen = false },
 
 	cokeAObj = { ModelName = JSC.SafeModels.CokeA, Pos 	= vector3( -0.23,  0.45,   0.75 ), Heading = 0.0,   Rot = vector3(0.0,   0.0,   0.0), 		Frozen = false },
