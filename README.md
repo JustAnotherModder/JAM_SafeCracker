@@ -4,7 +4,11 @@
 - No support. Don't post an issue.
 - Use JSC:Start() to open the minigame.
 
+- Soon to be part of a much larger drugs/criminal framework. Follow to keep updated.
+- https://github.com/JustAnotherModder/JAM_Drugs
+
 ![alt text](https://i.imgur.com/uVcpgbf.jpg)
+![alt text](https://imgur.com/a/WC09zxS)
 
 # Requirements
 - https://github.com/ESX-Org/es_extended
