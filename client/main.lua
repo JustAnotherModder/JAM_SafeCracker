@@ -11,7 +11,6 @@ function JSC:Awake()
 		TriggerEvent('JAM_Utilities:GetSharedObject', 	function(...) self:GetJUtils(...); 	end)
 		Citizen.Wait(0)
 	end	
-	self:Start()
 end
 
 function JSC:Start()
@@ -19,10 +18,11 @@ function JSC:Start()
 	local txd = CreateRuntimeTxd(self.Config.TextureDict)
 	for i = 1, 2 do CreateRuntimeTextureFromImage(txd, tostring(i), "LockPart" .. i .. ".PNG") end
 
-	self.MinigameOpen 		= true
-	self.SoundID 			= GetSoundId() 
-	self.Timer 				= GetGameTimer()
+	self.MinigameOpen = true
+	self.SoundID 	  = GetSoundId() 
+	self.Timer 		  = GetGameTimer()
 
+	if not IsRadarHidden() then self.JUtils.SetUI(false); end
 	if not RequestAmbientAudioBank(self.Config.AudioBank, false) then self.JUtils.LoadAudioBank(self.Config.AudioBankName); end
 	if not HasStreamedTextureDictLoaded(self.Config.TextureDict) then self.JUtils.LoadTextureDict(self.Config.TextureDict); end
 
@@ -62,8 +62,6 @@ end
 
 function JSC:HandleMinigame() 
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
-
-	if not IsRadarHidden() then self.JUtils.DisplayUI(); end
 
 	local lockRot 		 = math.random(385.00, 705.00)	
 
@@ -132,11 +130,9 @@ end
 function JSC:EndMinigame(won)	
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
 
-	if IsRadarHidden() then self.JUtils.DisplayUI(); end
+	self.MinigameOpen = false	
+	if IsRadarHidden() then self.JUtils.SetUI(true); end
 
-	self.MinigameOpen = false
-
-	if IsRadarHidden() then self.JUtils.DisplayUI(); end
 	local msg = ""
 	if won then 
 		PlaySoundFrontend(self.SoundID, 	self.Config.SafeFinalSound, self.Config.SafeSoundset, true)
