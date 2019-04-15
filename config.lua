@@ -47,7 +47,7 @@ JSC.SafeObjects = {
 
 JSC.Config = {
 	LockTolerance	= 3,
-	CashReward		= 1000000,
+	CashReward		= 1000,
 
 	AudioBankName 	= "SAFE_CRACK",
 	TextureDict 	= "JDict",
