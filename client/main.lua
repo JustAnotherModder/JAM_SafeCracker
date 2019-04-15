@@ -1,5 +1,7 @@
 JSC = JAM_SafeCracker
 
+AddEventHandler('JAM_SafeCracker:GetSharedObject', function(cb) cb(JAM_SafeCracker); end)
+
 function JSC:GetESX(obj) self.ESX = obj; ESX = obj; end
 function JSC:GetJUtils(obj) self.JUtils = obj; JUtils = obj; end
 
@@ -155,9 +157,9 @@ function JSC:SpawnObjectTable(table, position, heading)
 	for k,v in pairs(table) do
 		local hash = self.JUtils.GetHashKey(v.ModelName)
 		local newObj = CreateObject(hash, v.Pos.x + position.x, v.Pos.y + position.y, v.Pos.z + position.z, true, false, true)
-		FreezeEntityPosition(newObj, v.Frozen)
-		SetEntityHeading(newObj, heading + v.Heading)
-		SetEntityRotation(newObj, v.Rot.x, v.Rot.y, v.Rot.z, 1, true)
+		FreezeEntityPosition(newObj, true)
+		if v.Rot.x ~= 0.0 or v.Rot.y ~= 0.0 or v.Rot.x ~= 0.0 then SetEntityRotation(newObj, v.Rot.x, v.Rot.y, v.Rot.z, 1, true); end
+		if v.Heading ~= 0.0 then SetEntityHeading(newObj, heading + v.Heading); end
 	end
 end
 
