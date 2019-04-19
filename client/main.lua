@@ -103,14 +103,14 @@ function JSC:HandleMinigame(rewards)
 	-- Still havn't done, you're welcome to ^^ --
 	---------------------------------------------
 
-	--------------------------------------
-	-- Comment this out for a challenge --
-	--------------------------------------
-
 	print("Here ya go, bloody cheater.")
 	for i = 1,4 do
 		print((lockNumbers[i] % 360) / 3.60)
 	end
+	--------------------------------------
+	-- Comment this out for a challenge --
+	--------------------------------------
+
 
     local correctCount	= 1
     local hasRandomized	= false
@@ -156,30 +156,73 @@ function JSC:EndMinigame(won, rewards)
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
 
 	self.MinigameOpen = false	
-	-- if IsRadarHidden() then self.JUtils.SetUI(true); end
 
-	local msg = ""
-	if won then 
-		PlaySoundFrontend(self.SoundID, 	self.Config.SafeFinalSound, self.Config.SafeSoundset, true)
-		msg = "~g~You cracked the lock."
+	ESX.TriggerServerCallback('JAM_Drugs:GetConfig', function(config)
+		local closestDist = 99999
+		local closestZone
 
-		Citizen.Wait(100)
-
-		PlaySoundFrontend(self.SoundID,  self.Config.SafeOpenSound, 	self.Config.SafeSoundset, true)
-		TriggerServerEvent('JSC:AddReward', rewards)
-		
-		while self.DoorHeading + 150 > GetEntityHeading(self.DoorObj) do		
-			SetEntityHeading(self.DoorObj, GetEntityHeading(self.DoorObj) + 0.3)
-			Citizen.Wait(0)
+		local localCoords = GetEntityCoords(PlayerPedId())
+		for k,v in pairs(config.Zones) do
+			if v.SafePos then
+				local dist = JUtils:GetVecDist(localCoords, v.SafePos)
+				if dist < closestDist then
+					closestDist = dist
+					closestZone = v
+				end
+			end
 		end
-	else		
-		PlaySoundFrontend(self.SoundID, 	self.Config.SafeResetSound, self.Config.SafeSoundset, true)
-		msg = "~r~You didn't crack the lock."
 
-	end
+		local msg = ""
+		if won then 
+			TriggerServerEvent('JAM_Drugs:SetSafeLocked', closestZone.ZoneTitle, 3)
+			PlaySoundFrontend(self.SoundID, self.Config.SafeFinalSound, self.Config.SafeSoundset, true)
+			msg = "~g~You cracked the lock."
+			self:OpenSafeDoor()	
 
-	TriggerEvent('esx:showNotification', msg)
+			Citizen.Wait(100)
+
+			PlaySoundFrontend(self.SoundID, self.Config.SafeOpenSound, self.Config.SafeSoundset, true)
+			TriggerServerEvent('JSC:AddReward', rewards)
+			
+		else	
+			TriggerServerEvent('JAM_Drugs:SetSafeLocked', closestZone.ZoneTitle, 2)	
+			PlaySoundFrontend(self.SoundID, self.Config.SafeResetSound, self.Config.SafeSoundset, true)
+			msg = "~r~You failed to crack the lock and triggered the safe lockout."
+		end
+
+		TriggerEvent('esx:showNotification', msg)
+	end)
 end
+
+function JSC:OpenSafeDoor()
+	local objs = ESX.Game.GetObjects()
+	local doorHash = GetHashKey(JSC.SafeModels.Door)
+	for k,v in pairs(objs) do
+		if GetEntityModel(v) == doorHash then 
+			while not NetworkHasControlOfEntity(v) do
+				NetworkRequestControlOfEntity(v)
+				Citizen.Wait(0)
+			end
+
+			local doorHeading = GetEntityPhysicsHeading(v)
+			local doorPosition = GetEntityCoords(v)
+
+			SetEntityCollision(v, false, false)
+			FreezeEntityPosition(v, false)
+
+			local targetHeading = doorHeading + 150
+
+			while doorHeading + 150 > GetEntityHeading(v) do		
+				SetEntityHeading(v, GetEntityHeading(v) + 0.3)
+				SetEntityCoords(v, doorPosition, false, false, false, false)
+				Citizen.Wait(0)
+			end
+
+			if not (GetEntityHeading(v) >= targetHeading) then SetEntityHeading(v, targetHeading); end
+		end
+	end
+end
+
 
 RegisterNetEvent('JAM_SafeCracker:EndMinigame')
 AddEventHandler('JAM_SafeCracker:EndMinigame', function(won, rewards) JSC:EndMinigame(won, rewards); end)
@@ -211,6 +254,8 @@ function JSC:SpawnSafeObject(table, position, heading)
 		if v.Rot.x ~= 0.0 or v.Rot.y ~= 0.0 or v.Rot.z ~= 0.0 then SetEntityRotation(newObj, v.Rot.x, v.Rot.y, v.Rot.z, 1, true); end
 		retTable[v.ModelName] = newObj		
 	end
+
+	JUtils.ReleaseTableOfModels(self.SafeModels)
 	return retTable
 end
 
