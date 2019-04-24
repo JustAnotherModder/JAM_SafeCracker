@@ -8,24 +8,18 @@ function JSC:GetJUtils(obj) self.JUtils = obj; JUtils = obj; end
 function JSC:Awake()
 	if not self then return; end	
 
-	while not ESX or not self.ESX or not JUtils or not self.JUtils do
-		TriggerEvent('esx:getSharedObject', 		  	function(...) self:GetESX(...); 	end)
-		TriggerEvent('JAM_Utilities:GetSharedObject', 	function(...) self:GetJUtils(...); 	end)
+	while not ESX or not self.ESX do
+		TriggerEvent('esx:getSharedObject', function(...) self:GetESX(...); end)
+		Citizen.Wait(0)
+	end
+
+	while not JUtils or not self.JUtils do
+		TriggerEvent('JAM_Utilities:GetSharedObject', function(...) self:GetJUtils(...); end)
 		Citizen.Wait(0)
 	end
 
 	TriggerServerEvent('JSC:Startup')
 end
-	-- ignore this. of no relevance to anything.
-
-	-- local playerpos = GetEntityCoords(PlayerPedId())
-	-- local hashKey =GetHashKey("bkr_prop_biker_safebody_01a")
-	-- local newObj = CreateObject(hashKey, playerpos.x, playerpos.y, playerpos.z, true, false, true)
-	-- print(GetOffsetFromEntityGivenWorldCoords(newObj, playerpos.x, playerpos.y, playerpos.z))
-	-- SetEntityHeading(newObj, 270.0)
-	-- print(GetOffsetFromEntityGivenWorldCoords(newObj, playerpos.x, playerpos.y, playerpos.z))
-	-- --print(GetModelDimensions(hashKey))
-
 
 function JSC:StartMinigame(rewards)
 	if not self or not self.Config or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end
@@ -35,11 +29,9 @@ function JSC:StartMinigame(rewards)
 	self.MinigameOpen = true
 	self.SoundID 	  = GetSoundId() 
 	self.Timer 		  = GetGameTimer()
-	self.JUtils.SetUI(false)
 
-	if not IsRadarHidden() then self.JUtils.SetUI(false); end
-	if not RequestAmbientAudioBank(self.Config.AudioBank, false) then self.JUtils.LoadAudioBank(self.Config.AudioBankName); end
-	if not HasStreamedTextureDictLoaded(self.Config.TextureDict) then self.JUtils.LoadTextureDict(self.Config.TextureDict); end
+	if not RequestAmbientAudioBank(self.Config.AudioBank, false) then RequestAmbientAudioBank(self.Config.AudioBankName, false); end
+	if not HasStreamedTextureDictLoaded(self.Config.TextureDict, false) then RequestStreamedTextureDict(self.Config.TextureDict, false); end
 
 	Citizen.CreateThread(function() self:Update(rewards); end)	
 end
@@ -110,7 +102,6 @@ function JSC:HandleMinigame(rewards)
 	--------------------------------------
 	-- Comment this out for a challenge --
 	--------------------------------------
-
 
     local correctCount	= 1
     local hasRandomized	= false
@@ -199,10 +190,10 @@ function JSC:OpenSafeDoor()
 	local doorHash = GetHashKey(JSC.SafeModels.Door)
 	for k,v in pairs(objs) do
 		if GetEntityModel(v) == doorHash then 
-			while not NetworkHasControlOfEntity(v) do
-				NetworkRequestControlOfEntity(v)
-				Citizen.Wait(0)
-			end
+			-- while not NetworkHasControlOfEntity(v) do
+			-- 	NetworkRequestControlOfEntity(v)
+			-- 	Citizen.Wait(0)
+			-- end
 
 			local doorHeading = GetEntityPhysicsHeading(v)
 			local doorPosition = GetEntityCoords(v)

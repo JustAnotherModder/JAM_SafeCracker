@@ -1,6 +1,20 @@
 JAM_SafeCracker = {}
 JSC = JAM_SafeCracker
 
+JSC.Config = {
+	LockTolerance	= 3,								-- How many clicks past the pin can the player go before the lock fails?							
+
+	AudioBankName 	= "SAFE_CRACK",						
+	TextureDict 	= "JSCTextureDict",
+
+	SafeSoundset 	= "SAFE_CRACK_SOUNDSET",
+	SafeTurnSound	= "tumbler_turn",
+	SafePinSound	= "tumbler_pin_fall",
+	SafeFinalSound	= "tumbler_pin_fall_final",
+	SafeResetSound	= "tumbler_reset",
+	SafeOpenSound	= "safe_door_open",
+}
+
 JSC.SafeModels = {
 	Safe  	= "bkr_prop_biker_safebody_01a",
 	Door  	= "bkr_prop_biker_safedoor_01a",
@@ -48,19 +62,4 @@ JSC.SafeObjects = {
 	cokeJObj = { ModelName = JSC.SafeModels.CokeA, Pos 	= vector3( -0.07,  0.45,   0.90 ), Heading =  0.0,   Rot = vector3(   0.0,   0.0,    0.0), 			Frozen = false },
 	cokeKObj = { ModelName = JSC.SafeModels.CokeA, Pos 	= vector3( -0.07,  0.45,   0.95 ), Heading =  0.0,   Rot = vector3(   0.0,   0.0,    0.0), 			Frozen = false },
 	cokeLObj = { ModelName = JSC.SafeModels.CokeA, Pos 	= vector3( -0.07,  0.45,   1.00 ), Heading =  0.0,   Rot = vector3(   0.0,   0.0,    0.0), 			Frozen = false },
-}
-
-JSC.Config = {
-	LockTolerance	= 3,
-	CashReward		= 1000,
-
-	AudioBankName 	= "SAFE_CRACK",
-	TextureDict 	= "JDict",
-
-	SafeSoundset 	= "SAFE_CRACK_SOUNDSET",
-	SafeTurnSound	= "tumbler_turn",
-	SafePinSound	= "tumbler_pin_fall",
-	SafeFinalSound	= "tumbler_pin_fall_final",
-	SafeResetSound	= "tumbler_reset",
-	SafeOpenSound	= "safe_door_open",
 }
