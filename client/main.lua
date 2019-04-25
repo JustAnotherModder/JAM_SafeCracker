@@ -148,13 +148,13 @@ function JSC:EndMinigame(won, rewards)
 
 	self.MinigameOpen = false	
 
-	ESX.TriggerServerCallback('JAM_Drugs:GetConfig', function(config)
+	ESX.TriggerServerCallback('JAM_Drugs:GetDrugZones', function(zones)
 		local closestDist = 99999
 		local closestZone
 
 		local localCoords = GetEntityCoords(PlayerPedId())
-		for k,v in pairs(config.Zones) do
-			if v.SafePos then
+		for k,v in pairs(zones) do
+			if v.Positions.SafePos then
 				local dist = JUtils:GetVecDist(localCoords, v.SafePos)
 				if dist < closestDist then
 					closestDist = dist
@@ -223,7 +223,7 @@ function JSC:SpawnSafeObject(table, position, heading)
 	if not table or not position or not heading then return; end
 	if type(table) ~= 'table' or type(position) ~= 'vector3' or type(heading) ~= 'number' then return; end
 
-	JUtils.LoadModelsInTable(self.SafeModels)
+	JUtils:LoadModelTable(self.SafeModels)
 
 	local retTable = {}
 	local i = 0
@@ -246,7 +246,7 @@ function JSC:SpawnSafeObject(table, position, heading)
 		retTable[v.ModelName] = newObj		
 	end
 
-	JUtils.ReleaseTableOfModels(self.SafeModels)
+	JUtils.ReleaseModelTable(self.SafeModels)
 	return retTable
 end
 
