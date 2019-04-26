@@ -1,5 +1,6 @@
 # JAM_SafeCracker
-- A safe cracker script. Used with https://github.com/JustAnotherModder/JAM_Drugs
+- A safe cracker script. 
+- This is being used with another mod, so you're going to have to edit a few things to get it working. Namely the end minigame and rewards functions.
 - No support. Don't post an issue.
 
 ![alt text](https://i.imgur.com/2FvhMqS.jpg)
