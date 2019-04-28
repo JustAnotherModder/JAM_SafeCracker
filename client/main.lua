@@ -43,7 +43,8 @@ function JSC:Update(rewards)
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not self.JUtils then return; end	
 	Citizen.CreateThread(function() self:HandleMinigame(rewards); end)
 	while self.MinigameOpen do
-		self:InputCheck()   
+		self:InputCheck()  
+		if IsEntityDead(GetPlayerPed()) then self:EndMinigame(false, false); end
 		Citizen.Wait(0)
 	end
 end
@@ -165,7 +166,7 @@ function JSC:EndMinigame(won, rewards)
 
 		local msg = ""
 		if won then 
-			TriggerServerEvent('JAM_Drugs:SetSafeLocked', closestZone.ZoneTitle, 3)
+			TriggerServerEvent('JAM_Drugs:SetZoneSafeLocked', closestZone.ZoneTitle, 3)
 			PlaySoundFrontend(self.SoundID, self.Config.SafeFinalSound, self.Config.SafeSoundset, true)
 			msg = "~g~You cracked the lock."
 			self:OpenSafeDoor()	
@@ -176,7 +177,7 @@ function JSC:EndMinigame(won, rewards)
 			TriggerServerEvent('JSC:AddReward', rewards)
 			
 		else	
-			TriggerServerEvent('JAM_Drugs:SetSafeLocked', closestZone.ZoneTitle, 2)	
+			TriggerServerEvent('JAM_Drugs:SetZoneSafeLocked', closestZone.ZoneTitle, 2)	
 			PlaySoundFrontend(self.SoundID, self.Config.SafeResetSound, self.Config.SafeSoundset, true)
 			msg = "~r~You failed to crack the lock and triggered the safe lockout."
 		end
@@ -190,10 +191,6 @@ function JSC:OpenSafeDoor()
 	local doorHash = GetHashKey(JSC.SafeModels.Door)
 	for k,v in pairs(objs) do
 		if GetEntityModel(v) == doorHash then 
-			-- while not NetworkHasControlOfEntity(v) do
-			-- 	NetworkRequestControlOfEntity(v)
-			-- 	Citizen.Wait(0)
-			-- end
 
 			local doorHeading = GetEntityPhysicsHeading(v)
 			local doorPosition = GetEntityCoords(v)
@@ -213,10 +210,6 @@ function JSC:OpenSafeDoor()
 		end
 	end
 end
-
-
-RegisterNetEvent('JAM_SafeCracker:EndMinigame')
-AddEventHandler('JAM_SafeCracker:EndMinigame', function(won, rewards) JSC:EndMinigame(won, rewards); end)
 
 function JSC:SpawnSafeObject(table, position, heading)
 	if not self or not JUtils then return; end
@@ -246,7 +239,7 @@ function JSC:SpawnSafeObject(table, position, heading)
 		retTable[v.ModelName] = newObj		
 	end
 
-	JUtils.ReleaseModelTable(self.SafeModels)
+	JUtils:ReleaseModelTable(self.SafeModels)
 	return retTable
 end
 
