@@ -5,8 +5,8 @@
 
 JAM_SafeCracker is being used with another mod that I'm developing, so it isn't very modular. In order to use this, you're going to need to modify a few things, and come up with your own "reward scheme", ect.
 
-/server/main.lua -- function JSC:AddReward
-/client/main.lua -- function JSC:EndMinigame
+- /server/main.lua -- function JSC:AddReward
+- /client/main.lua -- function JSC:EndMinigame
 
 ^^ Both contain things you're going to have to change.
 
