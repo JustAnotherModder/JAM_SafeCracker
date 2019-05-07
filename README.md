@@ -5,8 +5,8 @@
 
 JAM_SafeCracker is being used with another mod that I'm developing, so it isn't very modular. In order to use this, you're going to need to modify a few things, and come up with your own "reward scheme", ect.
 
-- /server/main.lua -- function JSC:AddReward
-- /client/main.lua -- function JSC:EndMinigame
+- JAM_SafeCracker_Server.lua -- function JSC:AddReward
+- JAM_SafeCracker_Client.lua -- function JSC:EndMinigame
 
 ^^ Both contain things you're going to have to change.
 
@@ -79,38 +79,5 @@ server_scripts {
 }
 ```
 
-
-
-## Download & Installation
-
-### Manually
-- Download https://github.com/JustAnotherModder/JAM_Garage/archive/master.zip
-- Extract the JAM_Garage folder (and its contents) into your `JAM` folder, inside of your `resources` directory.
-- Open `__resource.lua` in your `JAM` folder.
-- Add the files to their respective locations, like so :
-
-```
-client_scripts {
-	'JAM_Main.lua',
-	'JAM_Client.lua',
-	'JAM_Utilities.lua',
-
-	-- Garage
-	'JAM_Garage/JAM_Garage_Config.lua',
-	'JAM_Garage/JAM_Garage_Client.lua',
-}
-
-server_scripts {	
-	'JAM_Main.lua',
-	'JAM_Server.lua',
-	'JAM_Utilities.lua',
-
-	-- MySQL
-	'@mysql-async/lib/MySQL.lua',
-
-	-- Garage
-	'JAM_Garage/JAM_Garage_Config.lua',
-	'JAM_Garage/JAM_Garage_Server.lua',
-}
-```
-
+### Notes
+- Any and all improvements must be send back to the author (me), here on github.
