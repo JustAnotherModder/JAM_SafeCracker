@@ -1,7 +1,12 @@
 local JSC = JAM.SafeCracker
 function JSC:Awake()
-	if not self or not ESX then return; end	
-	while not ESX.IsPlayerLoaded() do Citizen.Wait(0); end
+	if not self then return; end	
+	if not ESX then
+		while not ESX do Citizen.Wait(100); end
+		self.ESX = ESX
+	end
+	while not ESX.IsPlayerLoaded() do Citizen.Wait(100); end
+	print("JAM_SafeCracker:Start() - Succesful")
 end
 
 function JSC:StartMinigame(rewards)
@@ -27,7 +32,7 @@ function JSC:Update(rewards)
 	Citizen.CreateThread(function() self:HandleMinigame(rewards); end)
 	while self.MinigameOpen do
 		self:InputCheck()  
-		if IsEntityDead(GetPlayerPed()) then self:EndMinigame(false, false); end
+		if IsEntityDead(GetPlayerPed(PlayerId())) then self:EndMinigame(false, false); end
 		Citizen.Wait(0)
 	end
 end
@@ -127,6 +132,7 @@ function JSC:HandleMinigame(rewards)
 	end
 end
 
+
 function JSC:EndMinigame(won, rewards)
 	if not self or not self.Config or not self.MinigameOpen or not ESX or not self.ESX or not JUtils or not JUtils then return; end
 
@@ -169,11 +175,14 @@ function JSC:EndMinigame(won, rewards)
 	end)
 end
 
+RegisterNetEvent('JSC:EndGame')
+AddEventHandler('JSC:EndGame', function() JSC:EndMinigame(); end)
+
 function JSC:OpenSafeDoor()
 	local objs = ESX.Game.GetObjects()
-	local doorHash = GetHashKey(JSC.SafeModels.Door)
+	local doorHash = JUtils.GetHashKey(JSC.SafeModels.Door)
 	for k,v in pairs(objs) do
-		if GetEntityModel(v) == doorHash then 
+		if (GetEntityModel(v)%0x100000000) == doorHash then 
 
 			local doorHeading = GetEntityPhysicsHeading(v)
 			local doorPosition = GetEntityCoords(v)
@@ -225,5 +234,8 @@ function JSC:SpawnSafeObject(table, position, heading)
 	JUtils:ReleaseModelTable(self.SafeModels)
 	return retTable
 end
+
+RegisterNetEvent('JAM_SafeCracker:SpawnSafe')
+AddEventHandler('JAM_SafeCracker:SpawnSafe', function(tab, pos, heading) JSC:SpawnSafeObject(tab, pos, heading); end)
 
 Citizen.CreateThread(function(...) JSC:Awake(...); end)

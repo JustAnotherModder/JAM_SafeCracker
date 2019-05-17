@@ -4,7 +4,7 @@ function JSC:AddReward(rewards)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	if not xPlayer then return; end
 
-	if rewards.CashAmount then cashReward = xPlayer.addMoney(rewards.CashAmount); end
+	if rewards.CashAmount then xPlayer.addAccountMoney('black_money', rewards.CashAmount); end
 
 	for k,v in pairs(rewards.Items) do
 		local randomCount = math.random(1, rewards.DrugsAmount)
