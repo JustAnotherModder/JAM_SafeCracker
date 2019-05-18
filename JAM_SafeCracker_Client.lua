@@ -86,7 +86,7 @@ function JSC:HandleMinigame(rewards)
 
 	print("Here ya go, bloody cheater.")
 	for i = 1,4 do
-		print((lockNumbers[i] % 360) / 3.60)
+		print(math.floor((lockNumbers[i] % 360) / 3.60))
 	end
 	--------------------------------------
 	-- Comment this out for a challenge --
