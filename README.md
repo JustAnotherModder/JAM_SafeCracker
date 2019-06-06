@@ -1,4 +1,7 @@
-# JAM_SafeCracker
+# JAM_SafeCracker|
+
+
+* [Discord](https://discord.gg/rBzBN4E)
 
 - No support, don't post an issue. Only simple questions that the example below doesn't already answer.
 - This release should probably be considered, at this point, "for developers only".
